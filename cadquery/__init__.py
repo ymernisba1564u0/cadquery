@@ -15,6 +15,9 @@ Basic usage::
     )
 
     cq.exporters.export(result, "output.step")
+
+Note: I'm using this fork primarily for learning OCCT geometry concepts and
+experimenting with custom selectors. The upstream project is at CadQuery/cadquery.
 """
 
 from .cq import (
