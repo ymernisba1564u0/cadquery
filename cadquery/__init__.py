@@ -18,6 +18,13 @@ Basic usage::
 
 Note: I'm using this fork primarily for learning OCCT geometry concepts and
 experimenting with custom selectors. The upstream project is at CadQuery/cadquery.
+
+Personal notes:
+    - DirectionNthSelector and RadiusNthSelector are especially useful for
+      selecting specific edges/faces in symmetric parts. See selectors.py for details.
+    - ConstraintAssembly (imported as Assembly from .assembly) is the newer
+      constraint-based assembly system; prefer it over occ_impl.assembly.Assembly
+      for new work.
 """
 
 from .cq import (
@@ -103,6 +110,7 @@ __all__ = [
     "Assembly",
     "Color",
     "Constraint",
+    "ConstraintAssembly",
     # Selectors
     "AndSelector",
     "AreaNthSelector",
