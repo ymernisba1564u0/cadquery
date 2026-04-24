@@ -27,6 +27,9 @@ Personal notes:
       for new work.
     - Assembly here refers to occ_impl.assembly.Assembly (the older tag-based system).
       Use ConstraintAssembly for anything involving solve() / constraints.
+    - CA is a personal shorthand alias for ConstraintAssembly (not in upstream).
+    - TODO: experiment with subclassing StringSyntaxSelector to add custom
+      selector syntax, e.g. "%cylinder" for cylindrical faces by radius range.
 """
 
 from .cq import (
@@ -128,17 +131,3 @@ __all__ = [
     "DirectionNthSelector",
     "DirectionSelector",
     "EdgeLengthSelector",
-    "FaceAreaSelector",
-    "HasCenterOfMassSelector",
-    "InverseSelector",
-    "LengthNthSelector",
-    "NearestToPointSelector",
-    "OrSelector",
-    "ParallelDirSelector",
-    "PerpendicularDirSelector",
-    "RadiusNthSelector",
-    "StringSyntaxSelector",
-    "SubtractSelector",
-    "SumSelector",
-    "TypeSelector",
-]
