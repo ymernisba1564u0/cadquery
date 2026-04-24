@@ -25,6 +25,8 @@ Personal notes:
     - ConstraintAssembly (imported as Assembly from .assembly) is the newer
       constraint-based assembly system; prefer it over occ_impl.assembly.Assembly
       for new work.
+    - Assembly here refers to occ_impl.assembly.Assembly (the older tag-based system).
+      Use ConstraintAssembly for anything involving solve() / constraints.
 """
 
 from .cq import (
@@ -86,6 +88,10 @@ from .assembly import (
 
 __version__ = "2.5.0.dev0"
 
+# Convenience alias so scripts can do `cq.CA` instead of `cq.ConstraintAssembly`.
+# Personal shorthand — not part of upstream.
+CA = ConstraintAssembly
+
 __all__ = [
     # Core workplane
     "CQContext",
@@ -108,6 +114,7 @@ __all__ = [
     "Shape",
     # Assembly
     "Assembly",
+    "CA",
     "Color",
     "Constraint",
     "ConstraintAssembly",
@@ -134,9 +141,4 @@ __all__ = [
     "SubtractSelector",
     "SumSelector",
     "TypeSelector",
-    # Submodules
-    "exporters",
-    "importers",
-    # Version
-    "__version__",
 ]
