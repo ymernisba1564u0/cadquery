@@ -71,10 +71,18 @@ class Shape:
         return _map.get(self._shape.ShapeType(), "Unknown")
 
     def center(self) -> Vector:
-        """Compute the center of mass of the shape."""
+        """Compute the center of mass of the shape.
+
+        Note: Falls back to bounding box center for non-solid shapes
+        where VolumeProperties may return the origin (0, 0, 0).
+        """
         props = GProp_GProps()
         brepgprop_VolumeProperties(self._shape, props)
         com = props.CentreOfMass()
+        # If mass is effectively zero the shape is non-solid; use bbox center instead
+        if props.Mass() < 1e-10:
+            min_pt, max_pt = self.bounding_box()
+            return (min_pt + max_pt) * 0.5
         return Vector(com.X(), com.Y(), com.Z())
 
     def bounding_box(self) -> Tuple[Vector, Vector]:
@@ -93,82 +101,3 @@ class Shape:
     def area(self) -> float:
         """Compute the surface area of the shape."""
         props = GProp_GProps()
-        brepgprop_SurfaceProperties(self._shape, props)
-        return props.Mass()
-
-    def is_null(self) -> bool:
-        """Return True if the underlying shape is null/invalid."""
-        return self._shape.IsNull()
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}: {self.shape_type}>"
-
-
-class Solid(Shape):
-    """Represents a solid (3-dimensional) shape."""
-
-    @classmethod
-    def make_box(
-        cls,
-        length: float,
-        width: float,
-        height: float,
-        pnt: Optional[Vector] = None,
-    ) -> "Solid":
-        """Create a rectangular box.
-
-        Args:
-            length: Dimension along the X axis.
-            width:  Dimension along the Y axis.
-            height: Dimension along the Z axis.
-            pnt:    Corner point (default: origin).
-        """
-        origin = pnt or Vector(0, 0, 0)
-        builder = BRepPrimAPI_MakeBox(
-            gp_Pnt(origin.x, origin.y, origin.z),
-            length, width, height,
-        )
-        return cls(builder.Shape())
-
-    @classmethod
-    def make_sphere(
-        cls,
-        radius: float,
-        center: Optional[Vector] = None,
-    ) -> "Solid":
-        """Create a sphere.
-
-        Args:
-            radius: Radius of the sphere.
-            center: Center point (default: origin).
-        """
-        c = center or Vector(0, 0, 0)
-        builder = BRepPrimAPI_MakeSphere(
-            gp_Pnt(c.x, c.y, c.z), radius
-        )
-        return cls(builder.Shape())
-
-    @classmethod
-    def make_cylinder(
-        cls,
-        radius: float,
-        height: float,
-        pnt: Optional[Vector] = None,
-        direction: Optional[Vector] = None,
-    ) -> "Solid":
-        """Create a cylinder.
-
-        Args:
-            radius:    Radius of the cylinder.
-            height:    Height of the cylinder.
-            pnt:       Base center point (default: origin).
-            direction: Axis direction (default: Z axis).
-        """
-        base = pnt or Vector(0, 0, 0)
-        axis = direction or Vector(0, 0, 1)
-        ax2 = gp_Ax2(
-            gp_Pnt(base.x, base.y, base.z),
-            gp_Dir(axis.x, axis.y, axis.z),
-        )
-        builder = BRepPrimAPI_MakeCylinder(ax2, radius, height)
-        return cls(builder.Shape())
