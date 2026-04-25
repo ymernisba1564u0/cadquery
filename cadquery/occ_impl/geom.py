@@ -29,6 +29,13 @@ class Vector:
     """A 3D vector with standard arithmetic operations.
 
     Wraps OCC gp_Vec to provide a more Pythonic interface.
+
+    Examples:
+        >>> v = Vector(1, 2, 3)
+        >>> v.length()
+        3.7416573867739413
+        >>> v.normalized()
+        Vector(0.267, 0.535, 0.802)
     """
 
     def __init__(self, *args):
@@ -99,67 +106,5 @@ class Vector:
     def __sub__(self, other: "Vector") -> "Vector":
         return Vector(self._v.Subtracted(other._v))
 
-    def __mul__(self, scalar: float) -> "Vector":
-        return Vector(self._v.Multiplied(scalar))
-
-    def __rmul__(self, scalar: float) -> "Vector":
-        return self.__mul__(scalar)
-
-    def __neg__(self) -> "Vector":
-        return Vector(self._v.Reversed())
-
     def __repr__(self) -> str:
-        return f"Vector({self.x:.6g}, {self.y:.6g}, {self.z:.6g})"
-
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, Vector):
-            return NotImplemented
-        return self._v.IsEqual(other._v, 1e-9, 1e-9)
-
-
-class BoundingBox:
-    """Axis-aligned bounding box computed from a TopoDS_Shape."""
-
-    def __init__(self, shape: Optional[TopoDS_Shape] = None, tol: float = 1e-6):
-        self._bbox = Bnd_Box()
-        self._bbox.SetGap(tol)
-        if shape is not None:
-            BRepBndLib.Add_s(shape, self._bbox)
-
-        xmin, ymin, zmin, xmax, ymax, zmax = (
-            0.0, 0.0, 0.0, 0.0, 0.0, 0.0
-        )
-        if not self._bbox.IsVoid():
-            xmin, ymin, zmin, xmax, ymax, zmax = self._bbox.Get()
-
-        self.xmin = xmin
-        self.ymin = ymin
-        self.zmin = zmin
-        self.xmax = xmax
-        self.ymax = ymax
-        self.zmax = zmax
-
-    @property
-    def center(self) -> Vector:
-        """Return the center of the bounding box."""
-        return Vector(
-            (self.xmin + self.xmax) / 2.0,
-            (self.ymin + self.ymax) / 2.0,
-            (self.zmin + self.zmax) / 2.0,
-        )
-
-    @property
-    def diagonal_length(self) -> float:
-        """Return the length of the bounding box diagonal."""
-        return math.sqrt(
-            (self.xmax - self.xmin) ** 2
-            + (self.ymax - self.ymin) ** 2
-            + (self.zmax - self.zmin) ** 2
-        )
-
-    def __repr__(self) -> str:
-        return (
-            f"BoundingBox(xmin={self.xmin:.6g}, ymin={self.ymin:.6g}, "
-            f"zmin={self.zmin:.6g}, xmax={self.xmax:.6g}, "
-            f"ymax={self.ymax:.6g}, zmax={self.zmax:.6g})"
-        )
+        return f"Vector({self.x:.3f}, {self.y:.3f}, {self.z:.3f})"
